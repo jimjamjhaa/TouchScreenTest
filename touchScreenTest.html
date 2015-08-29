@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width = device-width, initial-scale = 1.0, user-scalable = no">
+<html lang="em">
+<!-- saved from url=(0014)about:internet -->
+<head>
+<meta charset="utf-8">
+<title>Touch Screen Test</title>
+<style type="text/css">
+.cell{
+background-color:black;
+position:absolute;
+}
+
+
+</style>
+<script type="text/javascript">
+
+var SIZE = 20;
+var GAP_SIZE = 0;
+var GRID = [];
+var GRID_ROWS = Math.floor(screen.height/(SIZE+GAP_SIZE));
+var GRID_COLLUMS = Math.floor(screen.width/(SIZE+GAP_SIZE));
+var GRID_PANEL = {
+	id:0
+};
+var cycle=false;
+var x_position = 0;
+var y_position = 0;
+
+function populate(){
+	var stage = document.getElementById("stage")
+	for(var row=0;row<GRID_ROWS;row++){
+		var arr = [];
+		GRID.push(arr);
+		for(var collum=0;collum<GRID_COLLUMS;collum++){
+			var cell = document.createElement("div");
+			cell.setAttribute("class","cell");
+			cell.setAttribute("id","cell_"+row+","+collum)
+			stage.appendChild(cell);
+			cell.style.top=(row*(SIZE+GAP_SIZE))+"px";
+			cell.style.left=(collum*(SIZE+GAP_SIZE))+"px";
+			cell.style.height=SIZE+"px";
+			cell.style.width=SIZE+"px";
+			var gridPanel = Object.create(GRID_PANEL);
+			gridPanel.id = "cell_"+row+","+collum;
+			GRID[row].push(gridPanel);
+		}
+	}
+}
+
+function update_XnY(e){
+	x_position = e.pageX;
+	y_position = e.pageY;
+	return false;
+}
+
+function cycle_XnY(e){
+	cycle=true;
+	var timer=setInterval(function(e){
+		if(cycle){
+			var remainder_x = x_position%SIZE;
+			var remainder_y = y_position%SIZE;
+			var cell_x = ((x_position-remainder_x)/SIZE);
+			var cell_y = ((y_position-remainder_y)/SIZE);
+			document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="orange";
+		}
+		else{
+			clearInterval(timer);
+		}
+	},5);	
+	return false;
+}
+
+function cancel_XnY(){
+	cycle=false;
+	return false;
+}
+
+</script>
+</head>
+<body>
+<span id="stage"></div>
+
+<script>
+	populate();
+	document.body.addEventListener("mousedown",function(e){cycle_XnY(e)},false);
+	document.body.addEventListener("mouseup",cancel_XnY,false);
+	document.body.addEventListener("mousemove",function(e){update_XnY(e)},false);
+</script>
+
+</body>
+</html>
