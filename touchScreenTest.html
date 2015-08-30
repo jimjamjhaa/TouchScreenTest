@@ -15,11 +15,11 @@ position:absolute;
 </style>
 <script type="text/javascript">
 
-var SIZE = 20;
+var SIZE = (Math.floor(window.innerHeight/100))+(Math.floor(window.innerWidth/100))/2;
 var GAP_SIZE = 0;
 var GRID = [];
-var GRID_ROWS = Math.floor(screen.height/(SIZE+GAP_SIZE));
-var GRID_COLLUMS = Math.floor(screen.width/(SIZE+GAP_SIZE));
+var GRID_ROWS = Math.floor(window.innerHeight/(SIZE+GAP_SIZE));
+var GRID_COLLUMS = Math.floor(window.innerWidth/(SIZE+GAP_SIZE));
 var GRID_PANEL = {
 	id:0
 };
@@ -44,17 +44,22 @@ function populate(){
 			var gridPanel = Object.create(GRID_PANEL);
 			gridPanel.id = "cell_"+row+","+collum;
 			GRID[row].push(gridPanel);
+			if(row<4||row>(GRID_ROWS-5)||collum<4||collum>(GRID_COLLUMS-5)||(row>=((GRID_ROWS/2)-2)&&row<=((GRID_ROWS/2)+2))||(collum>=((GRID_COLLUMS/2)-2)&&collum<=((GRID_COLLUMS/2)+2))){
+				document.getElementById(GRID[row][collum].id).style.backgroundColor="red";
+			}
 		}
 	}
 }
 
 function update_XnY(e){
+	e.preventDefault();
 	x_position = e.pageX;
 	y_position = e.pageY;
 	return false;
 }
 
 function cycle_XnY(e){
+	e.preventDefault();
 	cycle=true;
 	var timer=setInterval(function(e){
 		if(cycle){
@@ -62,7 +67,12 @@ function cycle_XnY(e){
 			var remainder_y = y_position%SIZE;
 			var cell_x = ((x_position-remainder_x)/SIZE);
 			var cell_y = ((y_position-remainder_y)/SIZE);
-			document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="orange";
+			if(cell_y<4||cell_y>(GRID_ROWS-5)||cell_x<4||cell_x>(GRID_COLLUMS-5)||(cell_y>=((GRID_ROWS/2)-2)&&cell_y<=((GRID_ROWS/2)+2))||(cell_x>=((GRID_COLLUMS/2)-2)&&cell_x<=((GRID_COLLUMS/2)+2))){
+				document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="green";
+			}			
+			else{
+				document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="gray";
+			}
 		}
 		else{
 			clearInterval(timer);
@@ -86,6 +96,7 @@ function cancel_XnY(){
 	document.body.addEventListener("mousedown",function(e){cycle_XnY(e)},false);
 	document.body.addEventListener("mouseup",cancel_XnY,false);
 	document.body.addEventListener("mousemove",function(e){update_XnY(e)},false);
+	window.addEventListener("resize",function(){location.reload(false)},false);
 </script>
 
 </body>
