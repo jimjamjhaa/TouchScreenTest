@@ -10,16 +10,23 @@
 background-color:black;
 position:absolute;
 }
-
+body{
+background-color:black;
+}
+*{
+-ms-touch-action: none;
+}
 
 </style>
 <script type="text/javascript">
 
 var SIZE = (Math.floor(window.innerHeight/100))+(Math.floor(window.innerWidth/100))/2;
-var GAP_SIZE = 0;
+var GAP_SIZE = 2;
 var GRID = [];
 var GRID_ROWS = Math.floor(window.innerHeight/(SIZE+GAP_SIZE));
 var GRID_COLLUMS = Math.floor(window.innerWidth/(SIZE+GAP_SIZE));
+var MARGIN_TOP = (window.innerHeight%(SIZE+GAP_SIZE))/2;
+var MARGIN_LEFT = (window.innerWidth%(SIZE+GAP_SIZE))/2;
 var GRID_PANEL = {
 	id:0
 };
@@ -37,8 +44,8 @@ function populate(){
 			cell.setAttribute("class","cell");
 			cell.setAttribute("id","cell_"+row+","+collum)
 			stage.appendChild(cell);
-			cell.style.top=(row*(SIZE+GAP_SIZE))+"px";
-			cell.style.left=(collum*(SIZE+GAP_SIZE))+"px";
+			cell.style.top=(MARGIN_TOP+(row*(SIZE+GAP_SIZE)))+"px";
+			cell.style.left=(MARGIN_LEFT+(collum*(SIZE+GAP_SIZE)))+"px";
 			cell.style.height=SIZE+"px";
 			cell.style.width=SIZE+"px";
 			var gridPanel = Object.create(GRID_PANEL);
@@ -52,21 +59,31 @@ function populate(){
 }
 
 function update_XnY(e){
-	e.preventDefault();
-	x_position = e.pageX;
-	y_position = e.pageY;
+	if(e.preventDefault){
+		e.preventDefault();
+	}
+	else{
+		e.returnValue = false;
+	}
+	x_position = e.changedTouches[0].clientX-MARGIN_LEFT;
+	y_position = e.changedTouches[0].clientY-MARGIN_TOP;
 	return false;
 }
 
 function cycle_XnY(e){
-	e.preventDefault();
+	if(e.preventDefault){
+		e.preventDefault();
+	}
+	else{
+		e.returnValue = false;
+	}
 	cycle=true;
 	var timer=setInterval(function(e){
 		if(cycle){
-			var remainder_x = x_position%SIZE;
-			var remainder_y = y_position%SIZE;
-			var cell_x = ((x_position-remainder_x)/SIZE);
-			var cell_y = ((y_position-remainder_y)/SIZE);
+			var remainder_x = (x_position)%(SIZE+GAP_SIZE);
+			var remainder_y = (y_position)%(SIZE+GAP_SIZE);
+			var cell_x = ((x_position-remainder_x)/(SIZE+GAP_SIZE));
+			var cell_y = ((y_position-remainder_y)/(SIZE+GAP_SIZE));
 			if(cell_y<4||cell_y>(GRID_ROWS-5)||cell_x<4||cell_x>(GRID_COLLUMS-5)||(cell_y>=((GRID_ROWS/2)-2)&&cell_y<=((GRID_ROWS/2)+2))||(cell_x>=((GRID_COLLUMS/2)-2)&&cell_x<=((GRID_COLLUMS/2)+2))){
 				document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="green";
 			}			
@@ -81,7 +98,13 @@ function cycle_XnY(e){
 	return false;
 }
 
-function cancel_XnY(){
+function cancel_XnY(e){
+	if(e.preventDefault){
+		e.preventDefault();
+	}
+	else{
+		e.returnValue = false;
+	}
 	cycle=false;
 	return false;
 }
@@ -89,13 +112,13 @@ function cancel_XnY(){
 </script>
 </head>
 <body>
-<span id="stage"></div>
+<span id="stage"></span>
 
 <script>
 	populate();
-	document.body.addEventListener("mousedown",function(e){cycle_XnY(e)},false);
-	document.body.addEventListener("mouseup",cancel_XnY,false);
-	document.body.addEventListener("mousemove",function(e){update_XnY(e)},false);
+	document.body.addEventListener("touchstart",function(e){cycle_XnY(e)},false);
+	document.body.addEventListener("touchend",function(e){cancel_XnY(e)},false);
+	document.body.addEventListener("touchmove",function(e){update_XnY(e)},false);
 	window.addEventListener("resize",function(){location.reload(false)},false);
 </script>
 
