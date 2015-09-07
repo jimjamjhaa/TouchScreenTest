@@ -30,7 +30,6 @@ var MARGIN_LEFT = (window.innerWidth%(SIZE+GAP_SIZE))/2;
 var GRID_PANEL = {
 	id:0
 };
-var cycle=false;
 var x_position = 0;
 var y_position = 0;
 
@@ -58,6 +57,19 @@ function populate(){
 	}
 }
 
+function changeColor(){
+	var remainder_x = (x_position)%(SIZE+GAP_SIZE);
+	var remainder_y = (y_position)%(SIZE+GAP_SIZE);
+	var cell_x = ((x_position-remainder_x)/(SIZE+GAP_SIZE));
+	var cell_y = ((y_position-remainder_y)/(SIZE+GAP_SIZE));
+	if(cell_y<4||cell_y>(GRID_ROWS-5)||cell_x<4||cell_x>(GRID_COLLUMS-5)||(cell_y>=((GRID_ROWS/2)-2)&&cell_y<=((GRID_ROWS/2)+2))||(cell_x>=((GRID_COLLUMS/2)-2)&&cell_x<=((GRID_COLLUMS/2)+2))){
+		document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="green";
+	}			
+	else{
+		document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="gray";
+	}
+}
+
 function update_XnY(e){
 	if(e.preventDefault){
 		e.preventDefault();
@@ -67,7 +79,7 @@ function update_XnY(e){
 	}
 	x_position = e.changedTouches[0].clientX-MARGIN_LEFT;
 	y_position = e.changedTouches[0].clientY-MARGIN_TOP;
-	return false;
+	changeColor();
 }
 
 function cycle_XnY(e){
@@ -77,25 +89,9 @@ function cycle_XnY(e){
 	else{
 		e.returnValue = false;
 	}
-	cycle=true;
-	var timer=setInterval(function(e){
-		if(cycle){
-			var remainder_x = (x_position)%(SIZE+GAP_SIZE);
-			var remainder_y = (y_position)%(SIZE+GAP_SIZE);
-			var cell_x = ((x_position-remainder_x)/(SIZE+GAP_SIZE));
-			var cell_y = ((y_position-remainder_y)/(SIZE+GAP_SIZE));
-			if(cell_y<4||cell_y>(GRID_ROWS-5)||cell_x<4||cell_x>(GRID_COLLUMS-5)||(cell_y>=((GRID_ROWS/2)-2)&&cell_y<=((GRID_ROWS/2)+2))||(cell_x>=((GRID_COLLUMS/2)-2)&&cell_x<=((GRID_COLLUMS/2)+2))){
-				document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="green";
-			}			
-			else{
-				document.getElementById(GRID[cell_y][cell_x].id).style.backgroundColor="gray";
-			}
-		}
-		else{
-			clearInterval(timer);
-		}
-	},5);	
-	return false;
+	x_position = e.changedTouches[0].clientX-MARGIN_LEFT;
+	y_position = e.changedTouches[0].clientY-MARGIN_TOP;
+	changeColor();
 }
 
 function cancel_XnY(e){
@@ -105,8 +101,6 @@ function cancel_XnY(e){
 	else{
 		e.returnValue = false;
 	}
-	cycle=false;
-	return false;
 }
 
 </script>
